@@ -13,6 +13,7 @@ Os tópicos percorridos incluem tensão axial, deformação, elasticidade 1D, vi
 ## Implementações
 
 - `i1.py` — Cálculo de tensão normal em cilindros coaxiais com visualização 3D (PyVista). Primeiro contato com a representação de estruturas e distribuição de tensões.
+- `i2.py` — Cálculo de tensão normal e deformação elástica (lei de Hooke) em elementos estruturais, com slider interativo para alternar entre cenas pré e pós-deformação.
 
 ## Como usar
 
