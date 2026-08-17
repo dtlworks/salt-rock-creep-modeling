@@ -92,11 +92,10 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
     lógica do problema mecânico estabelecido. Os parâmetros são utilizados para integralização de dados, 
     acertificando sua posterior visualização e análise.
     """
-    l_min = min(tensoes)
-    l_max = max(tensoes)
-    if l_min == l_max:
-        l_min -= 1e-3
-        l_max += 1e-3
+    limite = max(abs(min(tensoes)), abs(max(tensoes)))
+    if limite == 0:
+        limite = 1e-3
+    l_min, l_max = -limite, limite
     d_max = max(diametros)
     o_x = d_max * 3
     o_y = d_max * 3
@@ -107,8 +106,8 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
         cilindro = pv.Cylinder(
             radius = c['diametro']/2,
             height = c['altura'],
-            center=(0, 0, c['posicao_z'] + c['altura']/2),
-            direction=(0, 0, 1),
+            center = (0, 0, c['posicao_z'] + c['altura']/2),
+            direction = (0, 0, 1),
         )
         cilindro.cell_data['tensao'] = [c['tensao']] * cilindro.n_cells
         plotter.add_mesh(
