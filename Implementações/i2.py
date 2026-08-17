@@ -125,11 +125,10 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
     acertificando sua posterior visualização e análise.
     """
     plotter = pv.Plotter()
-    tensao_min = min(tensoes)/conversao_n_p_mpa
-    tensao_max = max(tensoes)/conversao_n_p_mpa
-    if tensao_min == tensao_max:
-        tensao_min -= 1e-3
-        tensao_max += 1e-3
+    limite = max(abs(min(tensoes)), abs(max(tensoes)))/conversao_n_p_mpa
+    if limite == 0:
+        limite = 1e-3
+    tensao_min, tensao_max = -limite, limite
     diametro_max = max(diametros)
     cord_x_plano = diametro_max * 3.5
     cord_z_plano = diametro_max * 3.5
