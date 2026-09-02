@@ -6,6 +6,28 @@ conversao_n_p_mpa = 1_000_000
 conversao_gpa_p_pa = 1_000_000_000
 amplificador_visual = 500
 
+
+def ler_dados():
+    """
+    Lê o arquivo .txt referente ao script, guardando os dados nele presente de forma organizada.
+    Ideia de automatizar mais o script, ao invés de inputs via console.
+    """
+    with open('Implementações/i2.txt', 'r', encoding = 'utf-8') as arquivo:
+        linhas_validas = [
+            linha.strip() for linha in arquivo
+            if linha.strip() and not linha.strip().startswith('#')
+        ]
+        diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
+        cargas = linhas_validas[int(linhas_validas[0])+1:int(linhas_validas[0])*2+1:1].copy()
+        comprimentos = linhas_validas[int(linhas_validas[0])*2+1:int(linhas_validas[0])*3+1:1].copy()
+        elasticidades = linhas_validas[int(linhas_validas[0])*3+1::1].copy()
+        diametros = [float(d) for d in diametros]
+        cargas = [float(c) for c in cargas]
+        comprimentos = [float(c) for c in comprimentos]
+        elasticidades = [float(e)*conversao_gpa_p_pa for e in elasticidades]
+        return diametros, cargas, comprimentos, elasticidades
+
+
 def calcular_secao_transversal(d: float) -> float:
     """
     Recebe o diâmetro (d em metros) do elemento estrutural.
@@ -53,52 +75,6 @@ def caracterizar_tensao_media(tensao: float) -> str:
     return "Sem tensão"
 
 
-def ler_float(mensagem: str) -> float:
-    """
-    Função destinada a tratamento de erro na leitura exclusiva de pontos flutuantes.
-    """
-    while True:
-        try:
-            return float(input(mensagem))
-        except ValueError:
-            print("ERRO: Forneça um valor válido.")
-
-
-def ler_int(mensagem: str) -> int:
-    """
-    Função destinada a tratamento de erro na leitura exclusiva de números inteiros.
-    """
-    while True:
-        try:
-            return int(input(mensagem))
-        except ValueError:
-            print("ERRO: Forneça um valor válido.")
-
-
-def ler_dadof_mq_0(mensagem: str) -> float:
-    """
-    Função destinada a filtragem de dado de input, isto é, leitura exclusiva de pontos flutuantes maiores que zero.
-    """
-    while True:
-        n = ler_float(mensagem)
-        if n <= 0:
-            print('ERRO: Informe um valor válido.')
-            continue
-        return n
-
-
-def ler_dadoi_mq_0(mensagem: str) -> int:
-    """
-    Função destinada a filtragem de dado de input, isto é, leitura exclusiva de números inteiros maiores que zero.
-    """
-    while True:
-        n = ler_int(mensagem)
-        if n <= 0:
-            print('ERRO: Informe um valor válido.')
-            continue
-        return n
-
-
 def gerar_resultados_txt(cilindros: list, deformacoes: list, elasticidades: list) -> str:
     """
     Monta o texto formatado com o resumo dos resultados (tensão, deformação,
@@ -110,7 +86,7 @@ def gerar_resultados_txt(cilindros: list, deformacoes: list, elasticidades: list
         resultados += f"""
 Elemento {i}                                              
 Tensão: {cilindro['tensao']/conversao_n_p_mpa:.2f} MPa      
-Deformação Ab.: {deformacoes[i-1]*1000:.4f} mm            
+Deformação Ab.: {deformacoes[i-1]*1000:.3f} mm            
 Módulo de elasticidade: {elasticidades[i-1]/conversao_gpa_p_pa} GPa              
 Estado: {caracterizar_tensao_media(cilindro['tensao'])}
 Amplificador visual: {amplificador_visual}x\n
@@ -124,11 +100,13 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
     lógica do problema mecânico estabelecido. Os parâmetros são utilizados para integralização de dados, 
     acertificando sua posterior visualização e análise.
     """
+    tensoes = [t/conversao_n_p_mpa for t in tensoes]
     plotter = pv.Plotter()
-    limite = max(abs(min(tensoes)), abs(max(tensoes)))/conversao_n_p_mpa
-    if limite == 0:
-        limite = 1e-3
-    tensao_min, tensao_max = -limite, limite
+    l_min = min(tensoes)
+    l_max = max(tensoes)
+    if l_min == l_max:
+        l_min -= 1e-3
+        l_max += 1e-3
     diametro_max = max(diametros)
     cord_x_plano = diametro_max * 3.5
     cord_z_plano = diametro_max * 3.5
@@ -153,11 +131,10 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
             y_acumulado += comprimento
             elemento_estrutural.cell_data['tensao'] = [cilindro['tensao']/conversao_n_p_mpa] * elemento_estrutural.n_cells
             plotter.add_mesh(
-                elemento_estrutural, show_edges = True, scalars = 'tensao', cmap = 'coolwarm',
-                clim = [tensao_min, tensao_max], scalar_bar_args = {'fmt': '%.2f MPa', 'title': 'Tensão Média\n'},
+                elemento_estrutural, show_edges = False, scalars = 'tensao', cmap = 'rainbow',
+                clim = [l_min, l_max], scalar_bar_args = {'fmt': '%.2f MPa', 'title': 'Tensão Média\n'},
                 name = f'cilindro_{indice}'
             )
-
         cord_y_max = y_acumulado + folga_plano_apoio
         superficie_apoio = pv.Plane(
             center = (0, cord_y_max, 0),
@@ -166,7 +143,6 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
             j_size = cord_z_plano
         )
         plotter.add_mesh(superficie_apoio, color = 'gray', opacity = 1, name = 'superficie_apoio')
-
     plotter.add_slider_widget(
         criar_estrutura,
         [0, 1],
@@ -174,7 +150,7 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
         title = 'Pré (0) / Pós-deformação (1)',
         title_opacity = 1,
         title_color = 'black',
-        fmt = '%.0f',
+        fmt = '%.2f',
         title_height = 0.035
     )
     plotter.add_text(gerar_resultados_txt(cilindros, deformacoes, elasticidades), font_size = 12, 
@@ -183,38 +159,19 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
 
 
 def main() -> None:
-    n = ler_dadoi_mq_0('Informe o número de elementos que compõem a estrutura: ')
-       
+
+    diametros, cargas, comprimentos, elasticidades = ler_dados()
     elementos = list()
-    cargas = list()
-    comprimentos = list()
-    diametros = list()
     tensoes = list()
-    elasticidades = list()
     deformacoes = list()
-
-    for i in range(n):
-        while True:
-            diametro = ler_dadof_mq_0(f'Forneça o diâmetro (em Metros) do elemento {i+1}: ')
-            if i > 0 and diametro <= diametros[i-1]:
-                print('ERRO: Para o problema em questão, queremos diâmetros que crescem conforme o número de elementos.')
-                continue
-            break
-        carga = ler_float(f'Forneça a carga (em Newtons) aplicada na extremidade do elemento {i+1}: ')
-        comprimento = ler_dadof_mq_0(f'Forneça o comprimento (em Metros) do elemento {i+1}: ')
-        elasticidade = ler_dadof_mq_0(f'Forneça o módulo de elasticidade (em GPa) do elemento {i+1}: ')*conversao_gpa_p_pa
-        diametros.append(diametro)
-        cargas.append(carga)
-        comprimentos.append(comprimento)
-        elasticidades.append(elasticidade)
-
-    for j in range(n):
+    
+    for j in range(len(cargas)):
         tensao = calcular_tensao_media_elemento(diametros[j], cargas[:j+1])
         deformacao_absoluta = calcular_deformacao_absoluta(tensao, elasticidades[j], comprimentos[j])
         tensoes.append(tensao)
         deformacoes.append(deformacao_absoluta)
 
-    for k in range(n):
+    for k in range(len(cargas)):
         elemento = {
             'elemento': k+1,
             'carga': cargas[k],
@@ -225,6 +182,7 @@ def main() -> None:
         }
         elementos.append(elemento)
     visualizar_estrutura(elementos, tensoes, diametros, deformacoes, elasticidades)
+
 
 if __name__ == '__main__':
     main()

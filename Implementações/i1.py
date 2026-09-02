@@ -1,6 +1,5 @@
 import math
 from random import randint
-
 import pyvista as pv
 
 FOLGA_PLANO_APOIO = 0.001
@@ -8,6 +7,23 @@ PA_PRA_MPA = 1_000_000
 ALTURA_MIN = 100
 ALTURA_MAX = 500
 ALTURA_DIVISOR = 1000
+
+
+def ler_dados():
+    """
+    Lê o arquivo .txt referente ao script, guardando os dados nele presente de forma organizada.
+    Ideia de automatizar mais o script, ao invés de inputs via console.
+    """
+    with open('Implementações/i1.txt', 'r', encoding = 'utf-8') as arquivo:
+        linhas_validas = [
+            linha.strip() for linha in arquivo
+            if linha.strip() and not linha.strip().startswith('#')
+        ]
+        diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
+        cargas = linhas_validas[int(linhas_validas[0])+1::1].copy()
+        diametros = [float(d) for d in diametros]
+        cargas = [float(d) for d in cargas]
+        return diametros, cargas
 
 
 def calcular_secao_transversal(d: float) -> float:
@@ -49,28 +65,6 @@ def caracterizar_tensao_media(tensao: float) -> str:
     return "Sem tensão"
 
 
-def ler_float(mensagem: str) -> float:
-    """
-    Função destinada a tratamento de erro na leitura exclusiva de pontos flutuantes.
-    """
-    while True:
-        try:
-            return float(input(mensagem))
-        except ValueError:
-            print('ERRO: Forneça um valor válido.')
-
-
-def ler_int(mensagem: str) -> int:
-    """
-    Função destinada a tratamento de erro na leitura exclusiva de números inteiros.
-    """
-    while True:
-        try:
-            return int(input(mensagem))
-        except ValueError:
-            print('ERRO: Forneça um valor válido.')
-
-
 def gerar_resultados_txt(cilindros: list) -> str:
     """
     Monta o texto formatado com o resumo dos resultados (tensão e estado)
@@ -79,7 +73,7 @@ def gerar_resultados_txt(cilindros: list) -> str:
     resultados = "Resultados:\n"
     for i, cilindro in enumerate(cilindros, start = 1):
         resultados += f"""
-Elemento {i}                                              
+Elemento {i}                                             
 Tensão: {cilindro['tensao']:.2f} MPa                
 Estado: {caracterizar_tensao_media(cilindro['tensao'])}
 """
@@ -92,10 +86,11 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
     lógica do problema mecânico estabelecido. Os parâmetros são utilizados para integralização de dados, 
     acertificando sua posterior visualização e análise.
     """
-    limite = max(abs(min(tensoes)), abs(max(tensoes)))
-    if limite == 0:
-        limite = 1e-3
-    l_min, l_max = -limite, limite
+    l_min = min(tensoes)
+    l_max = max(tensoes)
+    if l_min == l_max:
+        l_min -= 1e-3
+        l_max += 1e-3
     d_max = max(diametros)
     o_x = d_max * 3
     o_y = d_max * 3
@@ -112,13 +107,12 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
         cilindro.cell_data['tensao'] = [c['tensao']] * cilindro.n_cells
         plotter.add_mesh(
             cilindro,
-            show_edges = True,
+            show_edges = False,
             scalars = 'tensao',
-            cmap = 'coolwarm',
+            cmap = 'rainbow',
             clim = [l_min, l_max],
             scalar_bar_args = {'fmt': '%.3f MPa', 'title': 'Tensão Média\n'},
         )
-
     superficie_de_apoio = pv.Plane(
         center = (0, 0, z_max),
         direction = (0, 0, 1),
@@ -132,39 +126,18 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
 
 
 def main() -> None:
-    while True:
-        n = ler_int('Informe o número de cilindros que compõem a estrutura: ')
-        if n <= 0:
-            print('ERRO: Forneça um valor positivo.')
-            continue
-        break
 
-    cargas: list[float] = []
-    diametros: list[float] = []
+    diametros, cargas = ler_dados()
     tensoes: list[float] = []
     cilindros: list[dict] = []
 
-    for i in range(n):
-        while True:
-            diametro = ler_float(f'Forneça o diâmetro (em Metros) do cilindro {i+1}: ')
-            if diametro <= 0:
-                print('ERRO: Informe um valor válido para o diâmetro.')
-                continue
-            if i > 0 and diametro < diametros[i-1]:
-                print('ERRO: Para o problema em questão, queremos diâmetros que crescem conforme o número de elementos.')
-                continue
-            break
-        diametros.append(diametro)
-        carga = ler_float(f'Forneça a carga (em Newtons) aplicada na extremidade do cilindro {i+1}: ')
-        cargas.append(carga)
-
-    for j in range(n):
+    for j in range(len(cargas)):
         cargas_no_elemento = cargas[:j+1]
         tensao = (calcular_tensao_media_elemento(diametros[j], cargas_no_elemento)/PA_PRA_MPA)
         tensoes.append(tensao)
 
     z = 0
-    for k in range(n):
+    for k in range(len(cargas)):
         altura = randint(ALTURA_MIN, ALTURA_MAX)/ALTURA_DIVISOR
         cilindro = {
             'cilindro': k+1,
