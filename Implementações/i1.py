@@ -1,6 +1,9 @@
 import math
 from random import randint
 import pyvista as pv
+from pathlib import Path
+
+DIRETORIO_BASE = Path(__file__).parent
 
 FOLGA_PLANO_APOIO = 0.001
 PA_PRA_MPA = 1_000_000
@@ -9,21 +12,30 @@ ALTURA_MAX = 500
 ALTURA_DIVISOR = 1000
 
 
-def ler_dados():
+def ler_dados() -> tuple[list[float], list[float]]:
     """
     Lê o arquivo .txt referente ao script, guardando os dados nele presente de forma organizada.
     Ideia de automatizar mais o script, ao invés de inputs via console.
     """
-    with open('Implementações/i1.txt', 'r', encoding = 'utf-8') as arquivo:
-        linhas_validas = [
-            linha.strip() for linha in arquivo
-            if linha.strip() and not linha.strip().startswith('#')
-        ]
-        diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
-        cargas = linhas_validas[int(linhas_validas[0])+1::1].copy()
-        diametros = [float(d) for d in diametros]
-        cargas = [float(d) for d in cargas]
-        return diametros, cargas
+    caminho_arquivo = DIRETORIO_BASE / 'i1.txt'
+    try:
+        with open(caminho_arquivo, 'r', encoding = 'utf-8') as arquivo:
+            linhas_validas = [
+                linha.strip() for linha in arquivo
+                if linha.strip() and not linha.strip().startswith('#')
+            ]
+            diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
+            cargas = linhas_validas[int(linhas_validas[0])+1::1].copy()
+            diametros = [float(d) for d in diametros]
+            cargas = [float(d) for d in cargas]
+            return diametros, cargas
+    except FileNotFoundError:
+        raise ValueError(f"Arquivo de dados não encontrado: {caminho_arquivo}")
+    except (ValueError, IndexError) as erro:
+        raise ValueError(
+            "Arquivo de dados malformado ou com valores inválidos. "
+            f"Detalhe: {erro}"
+        ) from erro
 
 
 def calcular_secao_transversal(d: float) -> float:
@@ -86,11 +98,11 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
     lógica do problema mecânico estabelecido. Os parâmetros são utilizados para integralização de dados, 
     acertificando sua posterior visualização e análise.
     """
-    l_min = min(tensoes)
-    l_max = max(tensoes)
-    if l_min == l_max:
-        l_min -= 1e-3
-        l_max += 1e-3
+    tensao_min = min(tensoes)
+    tensao_max = max(tensoes)
+    if tensao_min == tensao_max:
+        tensao_min -= 1e-3
+        tensao_max += 1e-3
     d_max = max(diametros)
     o_x = d_max * 3
     o_y = d_max * 3
@@ -110,7 +122,7 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
             show_edges = False,
             scalars = 'tensao',
             cmap = 'rainbow',
-            clim = [l_min, l_max],
+            clim = [tensao_min, tensao_max],
             scalar_bar_args = {'fmt': '%.3f MPa', 'title': 'Tensão Média\n'},
         )
     superficie_de_apoio = pv.Plane(

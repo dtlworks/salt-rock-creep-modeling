@@ -1,31 +1,43 @@
 import math
 import pyvista as pv
+from pathlib import Path
 
-folga_plano_apoio = 0.0001
-conversao_n_p_mpa = 1_000_000
-conversao_gpa_p_pa = 1_000_000_000
-amplificador_visual = 500
+DIRETORIO_BASE = Path(__file__).parent
+
+FOLGA_PLANO_APOIO = 0.0001
+CONVERSAO_N_P_MPA = 1_000_000
+CONVERSAO_GPA_P_PA = 1_000_000_000
+AMPLIFICADOR_VISUAL = 500
 
 
-def ler_dados():
+def ler_dados() -> tuple[list[float], list[float], list[float], list[float]]:
     """
     Lê o arquivo .txt referente ao script, guardando os dados nele presente de forma organizada.
     Ideia de automatizar mais o script, ao invés de inputs via console.
     """
-    with open('Implementações/i2.txt', 'r', encoding = 'utf-8') as arquivo:
-        linhas_validas = [
-            linha.strip() for linha in arquivo
-            if linha.strip() and not linha.strip().startswith('#')
-        ]
-        diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
-        cargas = linhas_validas[int(linhas_validas[0])+1:int(linhas_validas[0])*2+1:1].copy()
-        comprimentos = linhas_validas[int(linhas_validas[0])*2+1:int(linhas_validas[0])*3+1:1].copy()
-        elasticidades = linhas_validas[int(linhas_validas[0])*3+1::1].copy()
-        diametros = [float(d) for d in diametros]
-        cargas = [float(c) for c in cargas]
-        comprimentos = [float(c) for c in comprimentos]
-        elasticidades = [float(e)*conversao_gpa_p_pa for e in elasticidades]
-        return diametros, cargas, comprimentos, elasticidades
+    caminho_arquivo = DIRETORIO_BASE / 'i2.txt'
+    try:
+        with open(caminho_arquivo, 'r', encoding = 'utf-8') as arquivo:
+            linhas_validas = [
+                linha.strip() for linha in arquivo
+                if linha.strip() and not linha.strip().startswith('#')
+            ]
+            diametros = linhas_validas[1:int(linhas_validas[0])+1:1].copy()
+            cargas = linhas_validas[int(linhas_validas[0])+1:int(linhas_validas[0])*2+1:1].copy()
+            comprimentos = linhas_validas[int(linhas_validas[0])*2+1:int(linhas_validas[0])*3+1:1].copy()
+            elasticidades = linhas_validas[int(linhas_validas[0])*3+1::1].copy()
+            diametros = [float(d) for d in diametros]
+            cargas = [float(c) for c in cargas]
+            comprimentos = [float(c) for c in comprimentos]
+            elasticidades = [float(e)*CONVERSAO_GPA_P_PA for e in elasticidades]
+            return diametros, cargas, comprimentos, elasticidades
+    except FileNotFoundError:
+        raise ValueError(f"Arquivo de dados não encontrado: {caminho_arquivo}")
+    except (ValueError, IndexError) as erro:
+        raise ValueError(
+            "Arquivo de dados malformado ou com valores inválidos. "
+            f"Detalhe: {erro}"
+        ) from erro
 
 
 def calcular_secao_transversal(d: float) -> float:
@@ -36,7 +48,7 @@ def calcular_secao_transversal(d: float) -> float:
     return math.pi*(d/2)**2
 
 
-def calcular_forca_normal(cargas: list) -> float:
+def calcular_forca_normal(cargas: list[float]) -> float:
     """
     Recebe um array fatiado com todas as cargas que influem no elemento. 
     A partir do correto fatiamento do array, cálcula e retorna a força/carga normal axial 
@@ -47,7 +59,7 @@ def calcular_forca_normal(cargas: list) -> float:
     return sum(cargas)
 
 
-def calcular_tensao_media_elemento(d: float, cargas: list) -> float:
+def calcular_tensao_media_elemento(d: float, cargas: list[float]) -> float:
     """
     Recebe o diâmetro do elemento e as cargas atuantes no mesmo.
     Cálcula e retorna a tensão média.
@@ -85,11 +97,11 @@ def gerar_resultados_txt(cilindros: list, deformacoes: list, elasticidades: list
     for i, cilindro in enumerate(cilindros, start = 1):
         resultados += f"""
 Elemento {i}                                              
-Tensão: {cilindro['tensao']/conversao_n_p_mpa:.2f} MPa      
+Tensão: {cilindro['tensao']/CONVERSAO_N_P_MPA:.2f} MPa      
 Deformação Ab.: {deformacoes[i-1]*1000:.3f} mm            
-Módulo de elasticidade: {elasticidades[i-1]/conversao_gpa_p_pa} GPa              
+Módulo de elasticidade: {elasticidades[i-1]/CONVERSAO_GPA_P_PA} GPa              
 Estado: {caracterizar_tensao_media(cilindro['tensao'])}
-Amplificador visual: {amplificador_visual}x\n
+Amplificador visual: {AMPLIFICADOR_VISUAL}x\n
 """
     return resultados
 
@@ -100,13 +112,13 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
     lógica do problema mecânico estabelecido. Os parâmetros são utilizados para integralização de dados, 
     acertificando sua posterior visualização e análise.
     """
-    tensoes = [t/conversao_n_p_mpa for t in tensoes]
+    tensoes = [t/CONVERSAO_N_P_MPA for t in tensoes]
     plotter = pv.Plotter()
-    l_min = min(tensoes)
-    l_max = max(tensoes)
-    if l_min == l_max:
-        l_min -= 1e-3
-        l_max += 1e-3
+    tensao_min = min(tensoes)
+    tensao_max = max(tensoes)
+    if tensao_min == tensao_max:
+        tensao_min -= 1e-3
+        tensao_max += 1e-3
     diametro_max = max(diametros)
     cord_x_plano = diametro_max * 3.5
     cord_z_plano = diametro_max * 3.5
@@ -121,7 +133,7 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
         ativo = round(value)
         y_acumulado = 0
         for indice, cilindro in enumerate(cilindros):
-            comprimento = cilindro['comprimento'] + (cilindro['deformacao'] * ativo * amplificador_visual)
+            comprimento = cilindro['comprimento'] + (cilindro['deformacao'] * ativo * AMPLIFICADOR_VISUAL)
             elemento_estrutural = pv.Cylinder(
                 radius = cilindro['diametro']/2,
                 height = comprimento,
@@ -129,13 +141,13 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
                 direction = (0, 1, 0)
             )
             y_acumulado += comprimento
-            elemento_estrutural.cell_data['tensao'] = [cilindro['tensao']/conversao_n_p_mpa] * elemento_estrutural.n_cells
+            elemento_estrutural.cell_data['tensao'] = [cilindro['tensao']/CONVERSAO_N_P_MPA] * elemento_estrutural.n_cells
             plotter.add_mesh(
                 elemento_estrutural, show_edges = False, scalars = 'tensao', cmap = 'rainbow',
-                clim = [l_min, l_max], scalar_bar_args = {'fmt': '%.2f MPa', 'title': 'Tensão Média\n'},
+                clim = [tensao_min, tensao_max], scalar_bar_args = {'fmt': '%.2f MPa', 'title': 'Tensão Média\n'},
                 name = f'cilindro_{indice}'
             )
-        cord_y_max = y_acumulado + folga_plano_apoio
+        cord_y_max = y_acumulado + FOLGA_PLANO_APOIO
         superficie_apoio = pv.Plane(
             center = (0, cord_y_max, 0),
             direction = (0, 1, 0),
