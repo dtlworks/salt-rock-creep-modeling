@@ -1,0 +1,10 @@
+# Informe o número de cilindros que compõem a estrutura:
+2
+# Forneça o diâmetro (em Metros) do cilindro 1
+0.03
+# Forneça o diâmetro (em Metros) do cilindro 2
+0.05
+# Forneça a carga (em Newtons) aplicada na extremidade do cilindro 1
+30000
+# Forneça a carga (em Newtons) aplicada na extremidade do cilindro 2
+40000

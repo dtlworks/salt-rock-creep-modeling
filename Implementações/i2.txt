@@ -1,0 +1,18 @@
+# Informe o número de cilindros que compõem a estrutura:
+2
+# Forneça o diâmetro (em Metros) do elemento 1
+0.05
+# Forneça o diâmetro (em Metros) do elemento 2
+0.075
+# Forneça a carga (em Newtons) aplicada na extremidade do elemento 1
+178000
+# Forneça a carga (em Newtons) aplicada na extremidade do elemento 2
+-266000
+# Forneça o comprimento (em Metros) do elemento 1
+1
+# Forneça o comprimento (em Metros) do elemento 2
+0.75
+# Forneça o módulo de elasticidade (em GPa) do elemento 1 
+200
+# Forneça o módulo de elasticidade (em GPa) do elemento 2
+105
