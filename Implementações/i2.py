@@ -163,9 +163,9 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
         title_opacity = 1,
         title_color = 'black',
         fmt = '%.2f',
-        title_height = 0.035
+        title_height = 0.045
     )
-    plotter.add_text(gerar_resultados_txt(cilindros, deformacoes, elasticidades), font_size = 12, 
+    plotter.add_text(gerar_resultados_txt(cilindros, deformacoes, elasticidades), font_size = 18, 
                      position = 'upper_left', color = 'black', shadow = True)
     plotter.show()
 

@@ -132,7 +132,7 @@ def visualizar_estrutura(cilindros: list[dict], tensoes: list[float], diametros:
         j_size = o_y,
     )
     plotter.add_mesh(superficie_de_apoio, color = 'gray', opacity = 1)
-    plotter.add_text(gerar_resultados_txt(cilindros), font_size = 12,
+    plotter.add_text(gerar_resultados_txt(cilindros), font_size = 18,
                      position = 'upper_left', color = 'black', shadow = True)
     plotter.show()
 
