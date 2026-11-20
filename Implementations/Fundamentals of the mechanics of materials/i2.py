@@ -131,6 +131,9 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
         Retorna as duas cenas construídas com embasamento em value. 
         """
         ativo = round(value)
+        titulo_barra_tensao = 'Tensão Média\n'
+        if not ativo and titulo_barra_tensao in plotter.scalar_bars:
+            plotter.remove_scalar_bar(titulo_barra_tensao, render = False)
         y_acumulado = 0
         for indice, cilindro in enumerate(cilindros):
             comprimento = cilindro['comprimento'] + (cilindro['deformacao'] * ativo * AMPLIFICADOR_VISUAL)
@@ -141,12 +144,19 @@ def visualizar_estrutura(cilindros: list, tensoes: list, diametros: list, deform
                 direction = (0, 1, 0)
             )
             y_acumulado += comprimento
-            elemento_estrutural.cell_data['tensao'] = [cilindro['tensao']/CONVERSAO_N_P_MPA] * elemento_estrutural.n_cells
-            plotter.add_mesh(
-                elemento_estrutural, show_edges = False, scalars = 'tensao', cmap = 'rainbow',
-                clim = [tensao_min, tensao_max], scalar_bar_args = {'fmt': '%.2f MPa', 'title': 'Tensão Média\n'},
-                name = f'cilindro_{indice}'
-            )
+            if ativo:
+                elemento_estrutural.cell_data['tensao'] = [cilindro['tensao']/CONVERSAO_N_P_MPA] * elemento_estrutural.n_cells
+                plotter.add_mesh(
+                    elemento_estrutural, show_edges = False, scalars = 'tensao', cmap = 'rainbow',
+                    clim = [tensao_min, tensao_max],
+                    scalar_bar_args = {'fmt': '%.2f MPa', 'title': titulo_barra_tensao},
+                    name = f'cilindro_{indice}'
+                )
+            else:
+                plotter.add_mesh(
+                    elemento_estrutural, show_edges = False, color = 'lightgray',
+                    name = f'cilindro_{indice}'
+                )
         cord_y_max = y_acumulado + FOLGA_PLANO_APOIO
         superficie_apoio = pv.Plane(
             center = (0, cord_y_max, 0),
