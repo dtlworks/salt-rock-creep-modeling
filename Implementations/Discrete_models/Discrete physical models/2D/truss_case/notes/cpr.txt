@@ -1,0 +1,8 @@
+Comandos para rodar no terminal aberto no diretório
+
+Lógica de chamada - ./.venv/bin/python main.py "arquivo exemplo" "magnitude de deformação amplificada"
+
+exemplo 1 (embasamento) - ./.venv/bin/python main.py exemplo1.txt 20000
+exemplo 2 (embasamento) - ./.venv/bin/python main.py exemplo2.txt 10000
+exemplo 3 (sofisticado) - ./.venv/bin/python main.py exemplo3.txt 700
+exemplo 4 (teste de fogo) - ./.venv/bin/python main.py exemplo4.txt 40

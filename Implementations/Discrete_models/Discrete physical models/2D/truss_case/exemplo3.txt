@@ -1,0 +1,239 @@
+# EXEMPLO 3 — modelo didatico da Ponte de Ferro sobre o Rio das Antas
+# Dois ramos em sequencia, com 62 m cada e 124 m no total.
+# O comprimento total e a divisao em dois vaos de 62 m sao informados pelo Confea.
+# Fonte: https://www.confea.org.br/138-dias-uma-ponte-entre-engenharia-e-comunidade-de-nova-roma-do-sul
+#
+# Idealizacoes: 14 paineis por ramo, altura de 7 m, trelica plana,
+# barras retas e articuladas. A altura e a geometria dos paineis sao estimativas.
+# Cada ramo possui 28 nos: 15 inferiores e 13 superiores.
+# Propriedades uniformes assumidas: E=2e11 Pa e A=1e-2 m2.
+# Esses valores nao foram obtidos do projeto estrutural da ponte.
+#
+# Cargas: 5 kN para baixo em cada no inferior interno.
+# Sao 26 cargas, totalizando 130 kN, equivalentes ao peso estatico
+# de aproximadamente 13,25 toneladas (m=F/g, g=9,81 m/s2).
+# E uma representacao didatica de carga veicular; nao modela rodas,
+# eixos, impacto dinamico nem distribuicao real pelo tabuleiro.
+# Este modelo nao serve para avaliar a seguranca da ponte real.
+#
+# Nos inferiores: 0 a 27 no primeiro tramo; 14 e o no central compartilhado.
+# Nos superiores: 28 a 54, sendo 28 a 40 do segundo tramo.
+# Nos inferiores do ramo 2: 28 a 42; superiores: 43 a 55.
+# O no inferior 14 e compartilhado pelos dois tramos no apoio central.
+
+NOS 55
+
+COORDENADAS
+0 0.000 0.0
+1 4.429 0.0
+2 8.857 0.0
+3 13.286 0.0
+4 17.714 0.0
+5 22.143 0.0
+6 26.571 0.0
+7 31.000 0.0
+8 35.429 0.0
+9 39.857 0.0
+10 44.286 0.0
+11 48.714 0.0
+12 53.143 0.0
+13 57.571 0.0
+14 62.000 0.0
+15 4.429 7.0
+16 8.857 7.0
+17 13.286 7.0
+18 17.714 7.0
+19 22.143 7.0
+20 26.571 7.0
+21 31.000 7.0
+22 35.429 7.0
+23 39.857 7.0
+24 44.286 7.0
+25 48.714 7.0
+26 53.143 7.0
+27 57.571 7.0
+28 66.429 0.0
+29 70.857 0.0
+30 75.286 0.0
+31 79.714 0.0
+32 84.143 0.0
+33 88.571 0.0
+34 93.000 0.0
+35 97.429 0.0
+36 101.857 0.0
+37 106.286 0.0
+38 110.714 0.0
+39 115.143 0.0
+40 119.571 0.0
+41 124.000 0.0
+42 66.429 7.0
+43 70.857 7.0
+44 75.286 7.0
+45 79.714 7.0
+46 84.143 7.0
+47 88.571 7.0
+48 93.000 7.0
+49 97.429 7.0
+50 101.857 7.0
+51 106.286 7.0
+52 110.714 7.0
+53 115.143 7.0
+54 119.571 7.0
+
+# BARRAS: no_i no_j E(Pa) area(m2)
+BARRAS
+# Corda inferior — ramo 1
+0 1 2.0e11 1.0e-2
+1 2 2.0e11 1.0e-2
+2 3 2.0e11 1.0e-2
+3 4 2.0e11 1.0e-2
+4 5 2.0e11 1.0e-2
+5 6 2.0e11 1.0e-2
+6 7 2.0e11 1.0e-2
+7 8 2.0e11 1.0e-2
+8 9 2.0e11 1.0e-2
+9 10 2.0e11 1.0e-2
+10 11 2.0e11 1.0e-2
+11 12 2.0e11 1.0e-2
+12 13 2.0e11 1.0e-2
+13 14 2.0e11 1.0e-2
+# Corda superior — ramo 1
+15 16 2.0e11 1.0e-2
+16 17 2.0e11 1.0e-2
+17 18 2.0e11 1.0e-2
+18 19 2.0e11 1.0e-2
+19 20 2.0e11 1.0e-2
+20 21 2.0e11 1.0e-2
+21 22 2.0e11 1.0e-2
+22 23 2.0e11 1.0e-2
+23 24 2.0e11 1.0e-2
+24 25 2.0e11 1.0e-2
+25 26 2.0e11 1.0e-2
+26 27 2.0e11 1.0e-2
+# Montantes — ramo 1
+1 15 2.0e11 1.0e-2
+2 16 2.0e11 1.0e-2
+3 17 2.0e11 1.0e-2
+4 18 2.0e11 1.0e-2
+5 19 2.0e11 1.0e-2
+6 20 2.0e11 1.0e-2
+7 21 2.0e11 1.0e-2
+8 22 2.0e11 1.0e-2
+9 23 2.0e11 1.0e-2
+10 24 2.0e11 1.0e-2
+11 25 2.0e11 1.0e-2
+12 26 2.0e11 1.0e-2
+13 27 2.0e11 1.0e-2
+# Diagonais alternadas — ramo 1
+15 0 2.0e11 1.0e-2
+15 2 2.0e11 1.0e-2
+17 2 2.0e11 1.0e-2
+17 4 2.0e11 1.0e-2
+19 4 2.0e11 1.0e-2
+19 6 2.0e11 1.0e-2
+21 6 2.0e11 1.0e-2
+21 8 2.0e11 1.0e-2
+23 8 2.0e11 1.0e-2
+23 10 2.0e11 1.0e-2
+25 10 2.0e11 1.0e-2
+25 12 2.0e11 1.0e-2
+27 12 2.0e11 1.0e-2
+27 14 2.0e11 1.0e-2
+
+# Corda inferior — ramo 2
+14 28 2.0e11 1.0e-2
+28 29 2.0e11 1.0e-2
+29 30 2.0e11 1.0e-2
+30 31 2.0e11 1.0e-2
+31 32 2.0e11 1.0e-2
+32 33 2.0e11 1.0e-2
+33 34 2.0e11 1.0e-2
+34 35 2.0e11 1.0e-2
+35 36 2.0e11 1.0e-2
+36 37 2.0e11 1.0e-2
+37 38 2.0e11 1.0e-2
+38 39 2.0e11 1.0e-2
+39 40 2.0e11 1.0e-2
+40 41 2.0e11 1.0e-2
+# Corda superior — ramo 2
+42 43 2.0e11 1.0e-2
+43 44 2.0e11 1.0e-2
+44 45 2.0e11 1.0e-2
+45 46 2.0e11 1.0e-2
+46 47 2.0e11 1.0e-2
+47 48 2.0e11 1.0e-2
+48 49 2.0e11 1.0e-2
+49 50 2.0e11 1.0e-2
+50 51 2.0e11 1.0e-2
+51 52 2.0e11 1.0e-2
+52 53 2.0e11 1.0e-2
+53 54 2.0e11 1.0e-2
+# Montantes — ramo 2
+28 42 2.0e11 1.0e-2
+29 43 2.0e11 1.0e-2
+30 44 2.0e11 1.0e-2
+31 45 2.0e11 1.0e-2
+32 46 2.0e11 1.0e-2
+33 47 2.0e11 1.0e-2
+34 48 2.0e11 1.0e-2
+35 49 2.0e11 1.0e-2
+36 50 2.0e11 1.0e-2
+37 51 2.0e11 1.0e-2
+38 52 2.0e11 1.0e-2
+39 53 2.0e11 1.0e-2
+40 54 2.0e11 1.0e-2
+# Diagonais alternadas — ramo 2
+42 14 2.0e11 1.0e-2
+42 29 2.0e11 1.0e-2
+44 29 2.0e11 1.0e-2
+44 31 2.0e11 1.0e-2
+46 31 2.0e11 1.0e-2
+46 33 2.0e11 1.0e-2
+48 33 2.0e11 1.0e-2
+48 35 2.0e11 1.0e-2
+50 35 2.0e11 1.0e-2
+50 37 2.0e11 1.0e-2
+52 37 2.0e11 1.0e-2
+52 39 2.0e11 1.0e-2
+54 39 2.0e11 1.0e-2
+54 41 2.0e11 1.0e-2
+
+# CARGAS: no Fx Fy
+# 13 nos internos por ramo, total 26 cargas de 5 kN para baixo
+CARGAS
+1 0.0 -5.0e3
+2 0.0 -5.0e3
+3 0.0 -5.0e3
+4 0.0 -5.0e3
+5 0.0 -5.0e3
+6 0.0 -5.0e3
+7 0.0 -5.0e3
+8 0.0 -5.0e3
+9 0.0 -5.0e3
+10 0.0 -5.0e3
+11 0.0 -5.0e3
+12 0.0 -5.0e3
+13 0.0 -5.0e3
+28 0.0 -5.0e3
+29 0.0 -5.0e3
+30 0.0 -5.0e3
+31 0.0 -5.0e3
+32 0.0 -5.0e3
+33 0.0 -5.0e3
+34 0.0 -5.0e3
+35 0.0 -5.0e3
+36 0.0 -5.0e3
+37 0.0 -5.0e3
+38 0.0 -5.0e3
+39 0.0 -5.0e3
+40 0.0 -5.0e3
+
+# RESTRICOES: no ux uy; L significa livre
+# Apoio externo esquerdo: xy
+# Apoio central: os dois nos coincidentes recebem uy prescrito.
+# O no 28 tambem recebe ux prescrito para ancorar horizontalmente o ramo 2.
+# Apoio externo direito: y
+RESTRICOES
+0 L 0.0
+14 0.0 0.0
+41 L 0.0

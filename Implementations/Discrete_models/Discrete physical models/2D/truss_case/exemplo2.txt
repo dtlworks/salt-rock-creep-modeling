@@ -1,0 +1,61 @@
+# Exemplo 2.7 - trelica plana 2D
+# Unidades SI: coordenadas em m, E em Pa, areas em m^2 e cargas em N.
+# Nos inferiores: indices 0 a 5, da esquerda para a direita.
+# Nos superiores: indices 6 a 11, da esquerda para a direita.
+# A ordem das linhas em BARRAS define os indices dos elementos.
+
+NOS 12
+# ELEMENTOS 22
+
+COORDENADAS
+0   0.0   0.0
+1   3.0   0.0
+2   6.0   0.0
+3   9.0   0.0
+4  12.0   0.0
+5  15.0   0.0
+6   0.0   4.0
+7   3.0   4.0
+8   6.0   4.0
+9   9.0   4.0
+10 12.0   4.0
+11 15.0   4.0
+
+# Barras: no_i no_j E area
+BARRAS
+# Corda inferior
+0 1 1.5e11 1.0e-2
+1 2 1.5e11 1.0e-2
+2 3 1.5e11 1.0e-2
+3 4 1.5e11 1.0e-2
+4 5 1.5e11 1.0e-2
+# Corda superior
+6 7 1.5e11 1.0e-2
+7 8 1.5e11 1.0e-2
+8 9 1.5e11 1.0e-2
+9 10 1.5e11 1.0e-2
+10 11 1.5e11 1.0e-2
+# Montantes
+0 6 1.5e11 1.0e-2
+1 7 1.5e11 1.0e-2
+2 8 1.5e11 1.0e-2
+3 9 1.5e11 1.0e-2
+4 10 1.5e11 1.0e-2
+5 11 1.5e11 1.0e-2
+# Diagonais conforme a figura
+6 1 1.5e11 1.0e-2
+7 2 1.5e11 1.0e-2
+2 9 1.5e11 1.0e-2
+8 3 1.5e11 1.0e-2
+3 10 1.5e11 1.0e-2
+4 11 1.5e11 1.0e-2
+
+# Cargas: no Fx Fy
+CARGAS
+2 0.0 -7.0e3
+
+# Restricoes: no ux uy; L significa livre.
+# Ambos os apoios restringem ux e uy (vinculos de segundo genero).
+RESTRICOES
+0 0.0 0.0
+5 0.0 0.0

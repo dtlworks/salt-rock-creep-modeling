@@ -1,0 +1,42 @@
+# Exemplo V - Modelo Hidráulico
+
+
+# Observações:
+
+# 1. Indexação: Os índices internos iniciam em zero (0 a 6).
+
+# 2. Reuso de Código: Mantiveram-se os termos do modelo mecânico para reaproveitar
+
+# a função de leitura de dados.
+
+# Correspondência de Variáveis (Mecânica -> Hidráulica):
+
+# - Força -------------------> Vazão
+
+# - Deslocamento Prescrito -> Pressão Prescrita
+
+
+
+NOS 7             # Qtd. total de nós
+ELEMENTOS 10      # Qtd. total de elementos
+
+# Conectividades e propriedades: [nó_i, nó_j, valor (fator de carga)]
+
+0 1 3.0          # Elemento 1: nós 0-1 (1-2 em base 1)
+1 3 5.0          # Elemento 2: nós 1-3 (2-4 em base 1)
+1 2 3.0          # Elemento 3: nós 1-2 (2-3 em base 1)
+1 4 2.0          # Elemento 4: nós 1-4 (2-5 em base 1)
+2 5 2.0          # Elemento 5: nós 2-5 (3-6 em base 1)
+5 4 2.0          # Elemento 6: nós 5-4 (6-5 em base 1)
+3 5 4.0          # Elemento 7: nós 3-5 (4-6 em base 1)
+5 6 2.0          # Elemento 8: nós 5-6 (6-7 em base 1)
+3 4 3.0          # Elemento 9: nós 3-4 (4-5 em base 1)
+2 4 3.0          # Elemento 10: nós 2-4 (3-5 em base 1)
+
+FORCAS 1         # Qtd. de vazões aplicadas (Forças no modelo mecânico)
+6 -8.0           # Nó 6: vazão prescrita de -8.0
+
+PRESCRITOS 1     # Qtd. de pressões prescritas (Deslocamentos no modelo mecânico)
+0 10.0           # Nó 0: pressão prescrita de 10.0
+
+ALPHA -1         # Valor do parâmetro Alpha

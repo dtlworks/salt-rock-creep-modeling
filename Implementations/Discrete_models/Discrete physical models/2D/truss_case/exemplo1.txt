@@ -1,0 +1,30 @@
+# Trelica plana 2D
+# Coordenadas e Propriedades no Sistema Internacional: metros, pascals e metros quadrados; as cargas, em newtons.
+ 
+NOS 4
+# ELEMENTOS 3
+
+# Coordenadas: no x y
+COORDENADAS
+0  0.0   0.0     # B
+1  0.0   1.0     # C
+2  1.0   1.0     # D
+3 -1.0   1.0     # F
+
+# Conectividade e propriedades: no_i no_j E area
+# A ordem das linhas em BARRAS define os índices dos elementos: 0, 1, 2, ...
+BARRAS
+0 1 1.0e11 2.0e-2   # BC
+0 2 1.0e11 1.0e-2   # BD
+0 3 1.0e11 1.0e-2   # BF
+
+# Cargas: nó | Fx | Fy
+CARGAS
+0 1.0e3 0.0
+
+# Restrições: nó | ux | uy
+# Use "L" para livre e um número para deslocamento prescrito.
+RESTRICOES
+1 0.0 0.0   # C fixo em x e y
+2 L   0.0   # D livre em x, fixo em y
+3 0.0 0.0   # F fixo em x e y
